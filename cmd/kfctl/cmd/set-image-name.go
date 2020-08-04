@@ -78,17 +78,18 @@ The flatten flag discards both registry and name components except for the last 
 					return err
 				}
 
+				//Replacing the image name with the updated new image name given from kustomization.yaml
 				kustomizationFilePath := filepath.Join(absPath, "kustomization.yaml")
 				if _, err := os.Stat(kustomizationFilePath); err == nil {
 					kustomization := kustomize.GetKustomization(absPath)
 					for i, image := range kustomization.Images {
-						if !strings.HasPrefix(image.Name, filter) {
-							log.Infof("No filter match for %s, skipping\n", image.Name)
+						if !strings.HasPrefix(image.NewName, filter) {
+							log.Infof("No filter match for %s, skipping\n", image.NewName)
 							continue
 						}
 
-						newName := setImageName(image.Name, newNameComponents)
-						log.Infof("Replacing image name from %s to %s", image.Name, newName)
+						newName := setImageName(image.NewName, newNameComponents)
+						log.Infof("Replacing image name from %s to %s", image.NewName, newName)
 						kustomization.Images[i].NewName = newName
 						fmt.Printf("%s=%s\n", imageToString(image), imageToString(kustomization.Images[i]))
 					}
