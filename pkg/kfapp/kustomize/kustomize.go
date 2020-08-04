@@ -980,8 +980,9 @@ func MergeKustomization(compDir string, targetDir string, kfDef *kfconfig.KfConf
 		patchJson.Target = value.Target
 		patchAbsolutePath := filepath.Join(targetDir, value.Path)
 		patchJson.Path = extractSuffix(compDir, patchAbsolutePath)
-		// patchJson.Path can be used for multiple targets, hence kustomizationMaps key is patchJson.Path+"-"+patchJson.Target.Name"
-		patchJsonMapKey := patchJson.Path + "-" + patchJson.Target.Name
+		// patchJson.Path can be used for multiple targets, hence kustomizationMaps key is patchJson.Target.Kind+"-"+patchJson.Target.Name+"-"+patchJson.Path"
+		//For components like central dashboard, both role & cluster role is present with same name (https://github.com/kubeflow/manifests/tree/master/common/centraldashboard/base),hence Target.Kind is also added
+		patchJsonMapKey := patchJson.Target.Kind + "-" + patchJson.Target.Name + "-" + patchJson.Path
 		if _, ok := kustomizationMaps[patchesJson6902Map][patchJsonMapKey]; !ok {
 			parent.PatchesJson6902 = append(parent.PatchesJson6902, *patchJson)
 			kustomizationMaps[patchesJson6902Map][patchJsonMapKey] = true
